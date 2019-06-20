@@ -4,6 +4,8 @@ import re
 
 df = pd.read_csv('best_data.csv')
 
+print(date(2000, 12, 1) < date(2001, 1, 1))
+
 def get_season(row):
     d = row['date']
     lat = int(row['latitude'])
@@ -12,6 +14,9 @@ def get_season(row):
     month = int(match.group(2))
     day = int(match.group(3))
     fecha = date(year, month, day)
+
+    if lat == -999:
+        return "no ubicacion"
     
     invierno = date(year, 6, 21)
     primavera = date(year, 9, 21)
@@ -31,23 +36,20 @@ def get_season(row):
         primavera2 = date(year+1, 3, 21)
         verano2 = date(year+1, 6, 21)
         oto2 = date(year+1, 9, 21)
-        if invierno <= fecha and fecha < primavera2:
-            return "inv"
         if primavera <= fecha and fecha < verano:
             return "pri"
         if verano <= fecha and fecha < oto:
             return "ver"
         if oto <= fecha and fecha < invierno:
             return "oto"
+        return "inv"
     if invierno <= fecha and fecha < primavera:
         return "inv"
-
     if primavera <= fecha and fecha < verano:
         return "pri"
-    if verano <= fecha and fecha < oto2:
-        return "ver"
     if oto <= fecha and fecha < invierno:
         return "oto"
+    return "ver"
     
 df['estacion'] = df.apply(get_season, axis=1)
 del df['Unnamed: 0']
